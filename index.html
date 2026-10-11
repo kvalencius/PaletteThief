@@ -29,31 +29,56 @@
   </nav>
 
   <div class="app">
-    <!-- ===================== SIDEBAR ===================== -->
-    <aside class="sidebar">
-      <div class="sidebar-inner">
-        <div class="sidebar-scroll">
+    <!-- ===================== RAIL KIRI (sidebar + gradient) ===================== -->
+    <div class="side-rail">
+      <aside class="sidebar">
+        <div class="sidebar-inner">
+          <div class="sidebar-scroll">
 
-          <section class="section">
-            <h3>Palet</h3>
-            <div id="palette-list" class="palette-list"></div>
-          </section>
+            <section class="section">
+              <h3>Palet</h3>
+              <div id="palette-list" class="palette-list"></div>
+            </section>
 
-          <section class="section">
-            <h3>Ekspor</h3>
-            <div class="btn-row">
-              <button class="btn-ghost btn-sm" data-export="png" disabled>PNG</button>
-              <button class="btn-ghost btn-sm" data-export="jpg" disabled>JPG</button>
-              <button class="btn-ghost btn-sm" data-export="jpeg" disabled>JPEG</button>
-              <button class="btn-ghost btn-sm" data-export="pdf" disabled>PDF</button>
-            </div>
-          </section>
+            <section class="section">
+              <h3>Ekspor</h3>
+              <div class="btn-row">
+                <button class="btn-ghost btn-sm" data-export="png" disabled>PNG</button>
+                <button class="btn-ghost btn-sm" data-export="jpg" disabled>JPG</button>
+                <button class="btn-ghost btn-sm" data-export="jpeg" disabled>JPEG</button>
+                <button class="btn-ghost btn-sm" data-export="pdf" disabled>PDF</button>
+              </div>
+            </section>
 
-          <button id="btn-reset" class="btn-ghost btn-block" disabled>Reset Gambar</button>
+            <button id="btn-reset" class="btn-ghost btn-block" disabled>Reset Gambar</button>
 
+          </div>
         </div>
-      </div>
-    </aside>
+      </aside>
+
+      <!-- ===== GRADIENT (nempel di kanan sidebar, ikut palet live) ===== -->
+      <section class="grad-panel" aria-label="Gradient dari palet">
+        <div class="grad-head">
+          <h3>Gradient</h3>
+          <button id="grad-copy" class="grad-copy" title="Copy CSS gradient" aria-label="Copy CSS gradient" disabled>
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+
+        <div id="grad-preview" class="grad-preview is-empty" aria-hidden="true"></div>
+
+        <div class="grad-field">
+          <label for="grad-angle">Sudut</label>
+          <input type="range" id="grad-angle" min="0" max="360" step="1" value="135" />
+          <span class="grad-angle-val" id="grad-angle-val">135°</span>
+        </div>
+
+        <pre class="grad-css is-empty" id="grad-css">Belum ada warna</pre>
+      </section>
+    </div>
 
     <!-- ===================== STAGE ===================== -->
     <main class="stage" id="stage">

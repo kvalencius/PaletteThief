@@ -97,6 +97,12 @@ function check(name, ok, extra) {
   check('status ready + nama file', ready.state === 'ready' && /compat-image\.png/.test(ready.text), ready.text);
   check('export & reset aktif', ready.exportOn && ready.resetOn);
 
+  const grad = await page.evaluate(() => ({
+    css: document.getElementById('grad-css').textContent,
+    empty: document.getElementById('grad-preview').classList.contains('is-empty'),
+  }));
+  check('gradient dari palet', /^linear-gradient\(/.test(grad.css) && !grad.empty, grad.css);
+
   // 3. tooltip saat hover chip
   await page.hover('.chip');
   await sleep(300);
@@ -121,6 +127,9 @@ function check(name, ok, extra) {
   await sleep(200);
   const hexes2 = await page.$$eval('.chip-hex', (n) => n.map((e) => e.textContent.trim()));
   check('drag marker mengubah hex', hexes[0] !== hexes2[0], hexes[0] + ' -> ' + hexes2[0]);
+
+  const gradAfter = await page.$eval('#grad-css', (e) => e.textContent);
+  check('gradient ikut live saat marker digeser', gradAfter !== grad.css && gradAfter.indexOf(hexes2[0]) >= 0, gradAfter);
 
   // 6. drag & drop ke jendela
   await page.evaluate(async (b64) => {

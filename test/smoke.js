@@ -159,6 +159,18 @@ function check(name, ok, extra) {
   const resetEnabled = await page.$eval('#btn-reset', (b) => !b.disabled);
   check('tombol reset aktif setelah load', resetEnabled);
 
+  const grad = await page.evaluate(() => ({
+    css: document.getElementById('grad-css').textContent,
+    empty: document.getElementById('grad-preview').classList.contains('is-empty'),
+    bg: getComputedStyle(document.getElementById('grad-preview')).backgroundImage,
+    copyOn: !document.getElementById('grad-copy').disabled,
+  }));
+  check(
+    'gradient terbentuk dari palet',
+    /^linear-gradient\(/.test(grad.css) && !grad.empty && /linear-gradient/.test(grad.bg) && grad.copyOn,
+    grad.css
+  );
+
   const enabledAfter = await page.$$eval('[data-export]', (n) => n.every((b) => !b.disabled));
   check('export aktif setelah load', enabledAfter);
 
@@ -193,6 +205,25 @@ function check(name, ok, extra) {
   const hexes2 = await page.$$eval('.chip-hex', (n) => n.map((e) => e.textContent.trim()));
   check('drag marker mengubah hex live', hexes1[0] !== hexes2[0], hexes1[0] + ' -> ' + hexes2[0]);
 
+  const gradAfterDrag = await page.$eval('#grad-css', (e) => e.textContent);
+  check('gradient ikut live saat marker digeser', gradAfterDrag !== grad.css && gradAfterDrag.indexOf(hexes2[0]) >= 0, gradAfterDrag);
+
+  await page.evaluate(() => {
+    const s = document.getElementById('grad-angle');
+    s.value = '45';
+    s.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  const grad45 = await page.evaluate(() => ({
+    css: document.getElementById('grad-css').textContent,
+    val: document.getElementById('grad-angle-val').textContent,
+  }));
+  check('slider sudut mengubah gradient', /linear-gradient\(45deg/.test(grad45.css) && grad45.val === '45°', JSON.stringify(grad45));
+
+  await page.evaluate(() => document.getElementById('grad-copy').click());
+  await sleep(250);
+  const gradToast = await page.$eval('#toast', (e) => e.textContent);
+  check('copy CSS gradient', /tersalin|gagal/i.test(gradToast), gradToast);
+
   // 5b. reset image -> slot kosong lagi (palet placeholder kembali)
   await page.click('#btn-reset');
   await sleep(300);
@@ -205,6 +236,8 @@ function check(name, ok, extra) {
     exportOff: [...document.querySelectorAll('[data-export]')].every((b) => b.disabled),
     resetOff: document.getElementById('btn-reset').disabled,
     previewSrc: document.getElementById('preview').getAttribute('src'),
+    gradEmpty: document.getElementById('grad-preview').classList.contains('is-empty'),
+    gradText: document.getElementById('grad-css').textContent,
   }));
   check(
     'reset mengosongkan slot gambar',
@@ -214,7 +247,9 @@ function check(name, ok, extra) {
       resetState.status === 'idle' &&
       resetState.exportOff &&
       resetState.resetOff &&
-      !resetState.previewSrc,
+      !resetState.previewSrc &&
+      resetState.gradEmpty &&
+      /Belum ada warna/.test(resetState.gradText),
     JSON.stringify(resetState)
   );
 

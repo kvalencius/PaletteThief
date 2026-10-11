@@ -32,6 +32,11 @@
     overlay: $('#drop-overlay'),
     sidebarToggle: $('#sidebar-toggle'),
     btnReset: $('#btn-reset'),
+    gradPreview: $('#grad-preview'),
+    gradCss: $('#grad-css'),
+    gradAngle: $('#grad-angle'),
+    gradAngleVal: $('#grad-angle-val'),
+    gradCopy: $('#grad-copy'),
     exportBtns: $$('[data-export]'),
   };
 
@@ -41,6 +46,7 @@
     img: null,
     fileName: '',
     lastGoodSrc: '',
+    angle: 135,
     tipAnchor: null,
     tipHex: '',
     dragDepth: 0,
@@ -80,16 +86,16 @@
     els.status.setAttribute('aria-label', text || 'Status');
   }
 
-  function copyHex(hex) {
-    const done = () => toast('Tersalin: ' + hex);
+  function copyText(text, okMsg) {
+    const done = () => toast(okMsg || 'Tersalin');
     if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(hex).then(done, fallback);
+      navigator.clipboard.writeText(text).then(done, fallback);
     } else {
       fallback();
     }
     function fallback() {
       const ta = document.createElement('textarea');
-      ta.value = hex;
+      ta.value = text;
       ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
       document.body.appendChild(ta);
       ta.focus();
@@ -99,6 +105,10 @@
       ta.remove();
       ok ? done() : toast('Gagal menyalin');
     }
+  }
+
+  function copyHex(hex) {
+    copyText(hex, 'Tersalin: ' + hex);
   }
 
   /* ===================== TOOLTIP (hex + copy) ===================== */
@@ -460,6 +470,7 @@
       if (p) paintChip(chip, p);
       els.paletteList.appendChild(chip);
     }
+    renderGradient();
   }
 
   function paintChip(chip, p) {
@@ -470,6 +481,37 @@
   function updateChip(index) {
     const chip = els.paletteList.querySelector('.chip[data-i="' + index + '"]');
     if (chip) paintChip(chip, state.palette[index]);
+    renderGradient(); // gradient ikut berubah real-time saat marker digeser
+  }
+
+  /* ===================== GRADIENT (dari palet, live) ===================== */
+
+  function gradientCss() {
+    const n = state.palette.length;
+    if (!n) return '';
+    const stops = state.palette
+      .map((c, i) => c.hex + ' ' + Math.round((i * 100) / (n - 1)) + '%')
+      .join(', ');
+    return 'linear-gradient(' + state.angle + 'deg, ' + stops + ')';
+  }
+
+  function renderGradient() {
+    const css = gradientCss();
+    if (!css) {
+      els.gradPreview.classList.add('is-empty');
+      els.gradPreview.style.background = '';
+      els.gradCss.classList.add('is-empty');
+      els.gradCss.textContent = 'Belum ada warna';
+      els.gradAngle.disabled = true;
+      els.gradCopy.disabled = true;
+      return;
+    }
+    els.gradPreview.classList.remove('is-empty');
+    els.gradPreview.style.background = css;
+    els.gradCss.classList.remove('is-empty');
+    els.gradCss.textContent = css;
+    els.gradAngle.disabled = false;
+    els.gradCopy.disabled = false;
   }
 
   /* ===================== EXPORT (PNG / JPG / JPEG / PDF) ===================== */
@@ -616,6 +658,17 @@
 
   els.emptyState.addEventListener('click', openPicker);
   els.btnReset.addEventListener('click', resetImage);
+
+  // Gradient: slider sudut + tombol copy CSS
+  els.gradAngle.addEventListener('input', () => {
+    state.angle = Number(els.gradAngle.value) || 0;
+    els.gradAngleVal.textContent = state.angle + '°';
+    renderGradient();
+  });
+  els.gradCopy.addEventListener('click', () => {
+    const css = gradientCss();
+    if (css) copyText(css, 'CSS gradient tersalin');
+  });
   els.fileInput.addEventListener('change', () => {
     loadImage(els.fileInput.files && els.fileInput.files[0]);
     els.fileInput.value = '';
