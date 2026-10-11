@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Build output (di-build ulang oleh CI)
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/

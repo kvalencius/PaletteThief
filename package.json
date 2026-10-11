@@ -1,0 +1,23 @@
+{
+  "name": "citra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test/smoke.js",
+    "test:dist": "node test/smoke.js dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "colorthief": "^3.5.0",
+    "jspdf": "^4.2.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "puppeteer-core": "^25.13.0"
+  }
+}
