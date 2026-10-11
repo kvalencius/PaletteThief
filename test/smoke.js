@@ -73,7 +73,18 @@ function check(name, ok, extra) {
   const cdp = await page.createCDPSession();
   await cdp.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: DL });
 
-  // 0. palet placeholder tampil sebelum ada gambar
+  // 0. semua referensi resource harus bisa di-serve apa adanya (bug deploy Pages)
+  const libs = await page.evaluate(() => ({
+    nodeModules: [...document.querySelectorAll('script[src], link[href]')].filter((el) =>
+      /node_modules/.test(el.getAttribute('src') || el.getAttribute('href') || '')
+    ).length,
+    colorThief: typeof window.ColorThief !== 'undefined' && typeof window.ColorThief.getPalette === 'function',
+    jsPdf: typeof (window.jspdf && window.jspdf.jsPDF) === 'function' || typeof window.jsPDF === 'function',
+  }));
+  check('tanpa rujukan node_modules', libs.nodeModules === 0, 'jumlah: ' + libs.nodeModules);
+  check('ColorThief + jsPDF termuat', libs.colorThief && libs.jsPdf, JSON.stringify(libs));
+
+  // 0b. palet placeholder tampil sebelum ada gambar
   const placeholders = await page.$$eval('.palette-list .chip-empty .chip-hex', (n) => n.map((e) => e.textContent.trim()));
   check('palet placeholder #------ sebelum upload', placeholders.length === 5 && placeholders.every((t) => t === '#------'), placeholders.join(' '));
 

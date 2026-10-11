@@ -14,11 +14,6 @@ const VENDOR = [
   ['node_modules/jspdf/dist/jspdf.umd.min.js', 'vendor/jspdf.umd.min.js'],
 ];
 
-const HTML_REWRITES = [
-  ['node_modules/colorthief/dist/umd/color-thief.global.js', 'vendor/color-thief.global.js'],
-  ['node_modules/jspdf/dist/jspdf.umd.min.js', 'vendor/jspdf.umd.min.js'],
-];
-
 const kb = (n) => (n / 1024).toFixed(1) + ' KB';
 
 async function build() {
@@ -52,9 +47,7 @@ async function build() {
     fs.copyFileSync(src, path.join(DIST, to));
   }
 
-  let html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-  for (const [from, to] of HTML_REWRITES) html = html.split(from).join(to);
-  fs.writeFileSync(path.join(DIST, 'index.html'), html);
+  fs.copyFileSync(path.join(ROOT, 'index.html'), path.join(DIST, 'index.html'));
 
   const files = [];
   (function walk(dir, prefix) {
