@@ -45,11 +45,17 @@ API yang dipakai (Pointer Events, canvas, FileReader, flex `gap`) sudah didukung
 
 ## Deploy (GitHub Pages)
 
-Workflow di `.github/workflows/deploy.yml` akan build dan deploy otomatis ke GitHub Pages setiap push ke `main`:
+Repo ini sudah siap di-deploy apa adanya: library (ColorThief + jsPDF) di-commit di folder `vendor/`, jadi `index.html` di root tidak butuh `npm install` untuk jalan.
 
-1. Buka repo → **Settings** → **Pages** → **Source** pilih **GitHub Actions**
-2. Push perubahan ke `main`, pantau di tab **Actions**
-3. Site live di `https://kvalencius.github.io/PaletteThief/`
+Dua pilihan:
+
+**A. Deploy dari branch (paling simpel)**
+1. Buka repo → **Settings** → **Pages** → **Source**: *Deploy from a branch*, branch `main`, folder **/ (root)**
+2. Site live di `https://kvalencius.github.io/PaletteThief/`
+
+**B. Otomatis via GitHub Actions (hasil build minified)**
+1. **Settings** → **Pages** → **Source**: **GitHub Actions**
+2. Tiap push ke `main`, `.github/workflows/deploy.yml` build `dist/` lalu deploy (pantau di tab **Actions**)
 
 ## Stack
 
