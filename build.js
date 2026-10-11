@@ -6,7 +6,8 @@ const esbuild = require('esbuild');
 
 const ROOT = __dirname;
 const DIST = path.join(ROOT, 'dist');
-const TARGET = ['chrome100', 'firefox100', 'safari15'];
+// Minimum: Chrome 89 (2021), Firefox 78 ESR (2020), Safari 14.1 (2021)
+const TARGET = ['chrome89', 'firefox78', 'safari14'];
 
 const VENDOR = [
   ['node_modules/colorthief/dist/umd/color-thief.global.js', 'vendor/color-thief.global.js'],

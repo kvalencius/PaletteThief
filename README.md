@@ -23,6 +23,26 @@ npm run test:dist  # smoke test hasil build
 
 Buka `index.html` untuk versi dev, atau `dist/index.html` untuk hasil build.
 
+Lintas browser (Chromium & Firefox):
+
+```bash
+node test/compat.js chrome "C:\Program Files\Google\Chrome\Application\chrome.exe" dist
+node test/compat.js edge   "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" dist
+node test/compat.js firefox "C:\Program Files\Mozilla Firefox\firefox.exe" dist
+```
+
+## Kompatibilitas
+
+| Browser | Status |
+| --- | --- |
+| Chrome / Edge / Opera / Brave / Vivaldi (Chromium) | ✅ diuji Chrome 113 & 155, Edge 155 |
+| Firefox | ✅ diuji Firefox 157 |
+| Safari (macOS / iOS) | ⚠️ tidak bisa diuji di Windows — tidak ada API khusus Chromium yang dipakai, `roundRect` & clipboard punya fallback |
+| Browser Android (Chrome, Firefox, Samsung Internet) | engine sama dengan versi desktop di atas |
+
+Versi minimum hasil build (`build.js`): **Chrome 89**, **Firefox 78 ESR**, **Safari 14.1**.
+API yang dipakai (Pointer Events, canvas, FileReader, flex `gap`) sudah didukung di versi tersebut; `canvas.roundRect` dan `navigator.clipboard` diberi fallback otomatis.
+
 ## Deploy (GitHub Pages)
 
 Workflow di `.github/workflows/deploy.yml` akan build dan deploy otomatis ke GitHub Pages setiap push ke `main`:
